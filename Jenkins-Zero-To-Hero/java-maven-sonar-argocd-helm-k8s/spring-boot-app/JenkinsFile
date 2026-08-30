@@ -184,8 +184,7 @@ pipeline {
 
                       echo "Updating deployment image to build ${BUILD_NUMBER}"
 
-                      sed -i "s|image: shuhaibmuhammad/ultimate-cicd:.*|image: shuhaibmuhammad/ultimate-cicd:${BUILD_NUMBER}|" "$DEPLOYMENT_FILE"
-
+                      sed -i "s|image: .*ultimate-cicd:.*|image: shuhaibmuhammad/ultimate-cicd:${BUILD_NUMBER}|" "$DEPLOYMENT_FILE"
                       echo "Updated deployment image:"
                       grep "image:" "$DEPLOYMENT_FILE"
 
@@ -200,3 +199,4 @@ pipeline {
       }
     }
 }
+
