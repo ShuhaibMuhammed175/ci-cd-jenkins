@@ -73,6 +73,48 @@ pipeline {
             }
         }
 
+        // stage('Update Deployment File') {
+        //     environment {
+        //         GIT_REPO_NAME = "ci-cd-jenkins"
+        //         GIT_USER_NAME = "ShuhaibMuhammed175"
+        //     }
+
+        //     steps {
+        //         withCredentials([
+        //             string(
+        //                 credentialsId: 'github',
+        //                 variable: 'GITHUB_TOKEN'
+        //             )
+        //         ]) {
+
+        //             sh '''
+        //                 cd "$WORKSPACE"
+
+        //                 echo "Current directory:"
+        //                 pwd
+
+        //                 echo "Git status:"
+        //                 git status
+
+        //                 git config user.email "mshuhaib175@gmail.com"
+        //                 git config user.name "ShuhaibMuhammad"
+
+        //                 DEPLOYMENT_FILE="Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml"
+
+        //                 sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" "$DEPLOYMENT_FILE"
+
+        //                 echo "Updated deployment image:"
+        //                 grep "image:" "$DEPLOYMENT_FILE"
+
+        //                 git add "$DEPLOYMENT_FILE"
+
+        //                 git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+
+        //                 git push "https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git" HEAD:main
+        //             '''
+        //         }
+        //     }
+        // }
         stage('Update Deployment File') {
             environment {
                 GIT_REPO_NAME = "ci-cd-jenkins"
@@ -81,14 +123,13 @@ pipeline {
 
             steps {
                 withCredentials([
-                    string(
-                        credentialsId: 'github',
-                        variable: 'GITHUB_TOKEN'
-                    )
+                    string(credentialsId: 'github', variable: 'GITHUB_TOKEN')
                 ]) {
-
                     sh '''
                         cd "$WORKSPACE"
+
+                        # Tell Git that this Jenkins workspace is trusted
+                        git config --global --add safe.directory "$WORKSPACE"
 
                         echo "Current directory:"
                         pwd
@@ -96,20 +137,25 @@ pipeline {
                         echo "Git status:"
                         git status
 
+                        # Configure Git
                         git config user.email "mshuhaib175@gmail.com"
                         git config user.name "ShuhaibMuhammad"
 
+                        # Deployment manifest
                         DEPLOYMENT_FILE="Jenkins-Zero-To-Hero/java-maven-sonar-argocd-helm-k8s/spring-boot-app-manifests/deployment.yml"
 
+                        # Update Docker image tag
                         sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" "$DEPLOYMENT_FILE"
 
                         echo "Updated deployment image:"
                         grep "image:" "$DEPLOYMENT_FILE"
 
+                        # Commit the change
                         git add "$DEPLOYMENT_FILE"
 
                         git commit -m "Update deployment image to version ${BUILD_NUMBER}"
 
+                        # Push changes back to GitHub
                         git push "https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}.git" HEAD:main
                     '''
                 }
